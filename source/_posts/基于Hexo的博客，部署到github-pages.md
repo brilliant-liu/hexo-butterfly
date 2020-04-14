@@ -21,7 +21,7 @@ cover: https://i.loli.net/2020/04/11/pt6MOZsTBdJwRfK.png
 
 ## 二、部署过程
 2.1 创建本地的博客项目，请参照鄙人创建博客教程：
-> https://brilliantsliu.github.io/2020/04/10/%E5%9F%BA%E4%BA%8EHexo%E6%A1%86%E6%9E%B6%EF%BC%8C%E8%BD%BB%E6%9D%BE%E6%90%9E%E5%AE%9A%E4%B8%AA%E4%BA%BABLOG/
+> https://brilliant-liu.github.io/2020/04/14/%E5%9F%BA%E4%BA%8EHexo%E6%A1%86%E6%9E%B6%EF%BC%8C%E8%BD%BB%E6%9D%BE%E6%90%9E%E5%AE%9A%E4%B8%AA%E4%BA%BABLOG/#%E4%BA%8C%E3%80%81%E5%88%9D%E5%A7%8B%E5%8C%96%E5%B7%A5%E7%A8%8B
 
 2.2 创建github仓库
 注意事项： 
@@ -121,7 +121,7 @@ jobs:
 > 但是访问主页会出现404，无法访问 </br> ，
 > ![404.png](https://i.loli.net/2020/04/14/5RbHudms4ZLl39p.png)
 >
-> 在官方文件中也有相应的描述，指明源文件必须存储在master分支
+> 在官方文件中也有相应的描述，指明源文件必须存储在master分支，所以建议将源码仓库和部署仓库分开处理。可参考本博客构建方式。
 
 配置文件配置好，系统会自动检测到master分支是否有改动，有改动系统会自动构建并发布。
 
