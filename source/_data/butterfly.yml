@@ -12,7 +12,7 @@ menu:
   标签: /tags/ || fa fa-tags
   类别: /categories/ || fa fa-folder-open
   友链: /link/ || fa fa-link
-  关于: /about/ || fa fa-heart
+#  关于: /about/ || fa fa-heart
   资源清单||fa fa-list:
     - 音乐 || /music/ || fa fa-music
     - 电影 || /movies/ || fa fa-film
