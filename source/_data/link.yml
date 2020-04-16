@@ -12,16 +12,16 @@ class:
       avatar: https://sm.ms/image/VpdN1HC7Yo3eXn5
       descr: hexo theme,本博客采用的主题
 
-  class2:
-    class_name: 博主github主页
-    link_list:
-      1:
-        name: 博主github主页
-        link: https://github.com/brilliantsliu/brilliantsliu.github.io
-        avatar: https://i.loli.net/2020/04/11/JGm7S64M1DjAlhH.png
-        descr: 博主github主页
-        2:
-          name: 博主github主页
-          link: https://github.com/brilliantsliu/brilliantsliu.github.io
-          avatar: https://i.loli.net/2020/04/11/JGm7S64M1DjAlhH.png
-          descr: 博主github主页
+class1:
+  class_name: 博主github主页
+  link_list:
+    1:
+      name: 博主github主页
+      link: https://github.com/brilliant-liu/
+      avatar: https://i.loli.net/2020/04/11/JGm7S64M1DjAlhH.png
+      descr: 博主github主页
+    2:
+      name: 博主gitlab主页2
+      link: https://github.com/brilliant-liu/
+      avatar: https://i.loli.net/2020/04/11/JGm7S64M1DjAlhH.png
+      descr: 博主gitlab主页

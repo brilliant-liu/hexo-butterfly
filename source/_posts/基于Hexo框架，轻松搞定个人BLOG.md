@@ -4,7 +4,7 @@ tags:
     - hexo
     - 教程
 categories:
-    - hexo
+    - [hexo]
 date: 2020-04-14 16:19:34
 cover: https://i.loli.net/2020/04/10/jH36xkB7YAbJNPp.png
 ---

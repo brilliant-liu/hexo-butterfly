@@ -5,8 +5,7 @@ tags:
     - 教程
     - github
 categories:
-    - hexo
-    - github
+    - [hexo,教程,github]
 date: 2020-04-14 16:20:22
 cover: https://i.loli.net/2020/04/11/pt6MOZsTBdJwRfK.png
 ---
