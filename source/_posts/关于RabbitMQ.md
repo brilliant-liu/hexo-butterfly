@@ -1,7 +1,11 @@
 --- 
-title: '''关于RabbitMQ''' 
+title: '关于RabbitMQ'
 date: 2020-06-19 15:05:27 
-tags: 
+tags:
+  - 教程
+  - MQ
+categories:
+  - [MQ] 
 --- 
  
 # 什么是MQ  
