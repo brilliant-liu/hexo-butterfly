@@ -1,7 +1,12 @@
 --- 
-title: '''关于RabbitMQ''' 
+title: '关于RabbitMQ'
 date: 2020-06-19 15:05:27 
-tags: 
+tags:
+  - 教程
+  - MQ
+categories:
+  - [MQ] 
+cover: 'http://doofuu.com/upload/2019/06/21/5d0cd08e17474.jpg'
 --- 
  
 # 什么是MQ  
