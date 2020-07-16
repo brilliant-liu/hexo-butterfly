@@ -1,5 +1,5 @@
 --- 
-title: '关于RabbitMQ'
+title: 关于RabbitMQ
 date: 2020-06-19 15:05:27 
 tags:
   - 教程
@@ -98,6 +98,13 @@ Exchange 将Route key和某个Topic进行模糊匹配，此时队列需要绑定
 ### Fanout Exchange
 不处理路由键，只需要简单的将队列绑定到交换机上，发送到交换机的消息都会被转发到与该交换机绑定的所有队列上。
 Fanout交换机，其转发消息时最快的。
+
+### header Exchange
+Headers 类型的Exchanges是不处理路由键的，而是根据发送的消息内容中的headers属性进行匹配。在绑定Queue与Exchange时指定一组键值对；当消息发送到RabbitMQ时会取到该消息的headers与Exchange绑定时指定的键值对进行匹配；如果完全匹配则消息会路由到该队列，否则不会路由到该队列。headers属性是一个键值对，可以是Hashtable，键值对的值可以是任何类型。
+
+匹配规则x-match有下列两种类型：
+x-match = all   ：表示所有的键值对都匹配才能接受到消息
+x-match = any ：表示只要有键值对匹配就能接受到消息
 
 ### Binding-绑定
 Exchange和Exchange、Queue之间的连接关系。binding中可以包含Routingkey或者参数。
