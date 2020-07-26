@@ -6,7 +6,7 @@ tags:
   - JVM
 categories:
   - [教程,JVM]
-cover: 'https://upload-images.jianshu.io/upload_images/5401760-cde4aefdad5438ca.png?imageMogr2/auto-orient/strip|imageView2/2/w/1145/format/webp'
+cover: 'https://upload-images.jianshu.io/upload_images/5401760-cde4aefdad5438ca.png'
 ---
 
 
@@ -23,7 +23,7 @@ cover: 'https://upload-images.jianshu.io/upload_images/5401760-cde4aefdad5438ca.
 
 ## Java虚拟机运行时数据区图
 
-![jvmframe.png](https://upload-images.jianshu.io/upload_images/5401760-cde4aefdad5438ca.png?imageMogr2/auto-orient/strip|imageView2/2/w/1145/format/webp)
+![jvmframe.png](https://upload-images.jianshu.io/upload_images/5401760-cde4aefdad5438ca.png)
 
 
 
@@ -307,4 +307,216 @@ Java虚拟机规范允许**Java栈的大小是动态的或者是固定不变的*
 ## 本地方法栈
 
  本地方法栈与虚拟机栈基本类似，区别在于虚拟机栈为虚拟机执行的java方法服务，而本地方法栈则是为Native方法服务。
+
+
+
+
+
+
+
+## 垃圾回收
+
+### java中的引用
+
++ 强引用
+
+  强引用不会被GC回收，并且在java.lang.ref里也没有实际的对应类型，平时工作接触的最多的就是强引用。Object obj = new Object();这里的obj引用便是一个强引用。当内存空间不足，Java虚拟机宁愿抛出OutOfMemoryError错误，使程序异常终止，也不会靠随意回收具有强引用的对象来解决内存不足问题。
+
++ 软引用
+
+  如果一个对象只具有软引用，那就类似于可有可物的生活用品。如果内存空间足够，垃圾回收器就不会回收它，如果内存空间不足了，就会回收这些对象的内存。只要垃圾回收器没有回收它，该对象就可以被程序使用。软引用可用来实现内存敏感的高速缓存。软引用可以和一个引用队列（ReferenceQueue）联合使用，如果软引用所引用的对象被垃圾回收，Java虚拟机就会把这个软引用加入到与之关联的引用队列中。
+
++ 弱引用
+
+  弱引用（weak reference）在强度上弱于软引用，通过类WeakReference来表示。它的作用是引用一个对象，但是并不阻止该对象被回收。如果使用一个强引用的话，只要该引用存在，那么被引用的对象是不能被回收的。弱引用则没有这个问题。
+
+  在垃圾回收器运行的时候，如果一个对象的所有引用都是弱引用的话，该对象会被回收。
+
+  弱引用的作用在于解决强引用所带来的对象之间在存活时间上的耦合关系。弱引用最常见的用处是在集合类中，尤其在哈希表中。哈希表的接口允许使用任何Java对象作为键来使用。当一个键值对被放入到哈希表中之后，哈希表对象本身就有了对这些键和值对象的引用。如果这种引用是强引用的话，那么只要哈希表对象本身还存活，其中所包含的键和值对象是不会被回收的。如果某个存活时间很长的哈希表中包含的键值对很多，最终就有可能消耗掉JVM中全部的内存。
+
+  对于这种情况的解决办法就是使用弱引用来引用这些对象，这样哈希表中的键和值对象都能被垃圾回收。Java中提供了[WeakHashMap](http://download.oracle.com/javase/6/docs/api/java/util/WeakHashMap.html)来满足这一常见需求。
+
+  > 扩展：
+  >
+  > `ThreadLocal`提供了线程独有的局部变量，可以在整个线程存活的过程中随时取用，极大地方便了一些逻辑的实现。
+  >
+  > Threadlocal可能发生内存泄漏：详细可参考 [ThreadLocal传送门](https://www.cnblogs.com/aspirant/p/8991010.html)
+  >
+  > 原因：ThreadLocal的原理：每个Thread内部维护着一个ThreadLocalMap，它是一个Map。这个映射表的Key是一个弱引用对象，其实就是ThreadLocal本身，Value是真正存的线程变量Object。
+  >
+  > (在threadlocal的生命周期中,都存在这些引用. 看下图: 实线代表强引用,虚线代表弱引用.)
+  >
+  > ![threadlocal原理图](https://images2018.cnblogs.com/blog/137084/201805/137084-20180504154502152-1165477841.jpg)
+  >
+  > 每个thread中都存在一个map, map的类型是`ThreadLocal.ThreadLocalMap. Map`中的key为一个threadlocal实例. 这个Map的确使用了弱引用,不过弱引用只是针对key. **每个key都弱引用指向threadlocal。** 当把threadlocal实例置为null以后，没有任何强引用指向threadlocal实例,所以threadlocal将会被gc回收. 
+  >
+  > 但是,我们的value却不能回收,因为存在一条从current thread连接过来的强引用. 只有当前thread结束以后, current thread就不会存在栈中,强引用断开, Current Thread, Map, value将全部被GC回收。
+  >
+  > 
+  >
+  > 结论：
+  >
+  > 只要这个线程对象被gc回收，就不会出现内存泄露，**但是如果使用线程池的时候，线程结束是不会销毁的，会再次使用的。就可能出现内存泄露**。
+  >
+  > 
+  >
+  > 扩展：
+  >
+  > + Java为了最小化减少内存泄露的可能性和影响，在ThreadLocal的get,set的时候都会清除线程Map里所有key为null的value。但是如果你使用了线程池，分配了数据但是又不调用get,set方法，那么内存泄漏依旧会存在。
+  >
+  >   所有最好的做法就是，使用之后，手动remove
+  >
+  > + JVM利用设置ThreadLocalMap的Key为弱引用，就是来避免内存泄露。
+  >
+  > 
+
+
+
++ 虚引用：
+
+  在介绍幽灵引用之前，要先介绍Java提供的对象终止化机制（finalization）。在Object类里面有个finalize方法，其设计的初衷是在一个对象被真正回收之前，可以用来执行一些清理的工作。因为Java并没有提供类似C++的析构函数一样的机制，就通过 finalize方法来实现。但是问题在于垃圾回收器的运行时间是不固定的，所以这些清理工作的实际运行时间也是不能预知的。幽灵引用（phantom reference）可以解决这个问题。在创建幽灵引用PhantomReference的时候必须要指定一个引用队列。当一个对象的finalize方法已经被调用了之后，这个对象的幽灵引用会被加入到队列中。通过检查该队列里面的内容就知道一个对象是不是已经准备要被回收了。
+
+
+
+###  如何判断对象的存活
+
++ 引用计数器法
+
+  引用计数算法就是在对象中添加了一个引用计数器，当有地方引用这个对象时，引用计数器的值就加1，当引用失效的时候，引用计数器的值就减1。当引用计数器的值为0时，jvm就开始回收这个对象。
+
+  > 引用计数器的缺点：
+  >
+  > 引用计数算法就是在对象中添加了一个引用计数器，当有地方引用这个对象时，引用计数器的值就加1，当引用失效的时候，引用计数器的值就减1。当引用计数器的值为0时，jvm就开始回收这个对象。
+
++ 可达性分析法
+
+  定义一个名为"GC Roots"的对象作为起始点，这个"GC Roots"可以有多个，从这些节点开始向下搜索，搜索所走过的路径称为引用链(Reference Chain)，当一个对象到GC Roots没有任何引用链相连时，则证明此对象是不可用的，即可以进行垃圾回收。
+
+  > `GC Roots`对象一般包括有：
+  > 1.虚拟机栈（栈帧中本地变量表）中引用的对象；
+  > 2.方法区中类静态属性引用的对象；
+  > 3.方法区中常量引用的对象；
+  > 4.本地方法栈中JNI（Native方法）引用的对象。
+
+  ![image](https://img-blog.csdnimg.cn/20200227140703948.png)
+
+### 
+
+### GC
+
+#### Minor GC
+
+- 特点: 发生在新生代上，发生的较频繁，执行速度较快
+- 触发条件: Eden 区空间不足/空间分配担保
+
+#### Full GC
+
+- 特点:主要发生在老年代上（新生代也会回收），较少发生，执行速度较慢
+- 触发条件:
+  - 调用 System.gc()
+  - 老年代区域空间不足
+  - 空间分配担保失败
+  - JDK 1.7 及以前的永久代(方法区)空间不足
+
+### 垃圾回收算法
+
+> 详细带图可参考：[垃圾回收带图](https://www.cnblogs.com/aademeng/articles/11028623.html)
+
+#### 标记-清楚算法
+
+**标记—清除算法是最基础的收集算法**，它分为“**标记**”和“**清除**”两个阶段：首先标记出所需回收的对象，在标记完成后统一回收掉所有被标记的对象，**它的标记过程其实就是前面的可达性分析算法中判定垃圾对象的标记过程**。
+
+![clear](https://upload-images.jianshu.io/upload_images/3251891-25c29a521cfe2a4b.png)
+
+![mark2](https://upload-images.jianshu.io/upload_images/3251891-0bbce21010980518.png)
+
+缺点：
+
+- 标记和清除过程的**效率都不高**
+
+- 标记清除后会产生大量不连续的**内存碎片**，空间碎片太多可能会导致，当程序在以后的运行过程中需要分配较大对象时无法找到足够的连续内存而不得不触发另一次垃圾收集动作
+
+  
+
+#### 复制算法
+
+复制算法是针对标记—清除算法的缺点，在其基础上进行改进而得到的，它将可用内存按容量分为大小相等的两块，每次只使用其中的一块，**当这一块的内存用完了，就将还存活着的对象复制到另外一块内存上面，然后再把已使用过的内存空间一次清理掉**。
+
+![copy](https://upload-images.jianshu.io/upload_images/3251891-977ed6107c0476b7.png)
+
+![xopy2](https://upload-images.jianshu.io/upload_images/3251891-af88a9c36b9338d4.png)
+
+优点：
+
+- 每次只对一块内存进行回收，运行高效
+- 只需移动栈顶指针，按顺序分配内存即可，实现简单
+- 内存回收时不用考虑内存碎片的出现
+
+缺点:
+
++ 可一次性分配的**最大内存缩小了一半**
+
+  
+
+#### 标记—整理算法（Mark-Compact）
+
+该算法标记的过程与标记—清除算法中的标记过程一样，但对标记后出的垃圾对象的处理情况有所不同，它不是直接对可回收对象进行清理，**而是让所有的对象都向一端移动，然后直接清理掉端边界以外的内存**。
+
+![markcompact](https://upload-images.jianshu.io/upload_images/3251891-7383aa69926fa5c3.png)
+
+回收后：
+
+![mark2](https://upload-images.jianshu.io/upload_images/3251891-b1070ff58ce46e24.png)
+
+
+
+
+
+#### 分代收集
+
+当前商业虚拟机的垃圾收集都采用分代收集，它**根据对象的存活周期的不同将内存划分为几块**，一般是把Java堆分为**新生代**（年轻代）和**老年代**。
+
+年轻代又进一步划分为：Eden(伊甸园)，Survivor(幸存区)，Survivor又包含from  to区。
+
+![image.png](https://i.loli.net/2020/07/26/3yflcICEvFZL8nk.png)
+
+每次创建的对象都会在年轻代的Eden中诞生，随着MinorGC的通过可达性算法，会把存活下来的对象，通过**复制算法** 将其复制到Survivor中的from或者to区，同时将from或者to区的数据的分代年龄+1，同时回收未存活的对象。如果分代年龄达到15，则会将该对象复制到老年代中。如果新生代的内存不足，也会将对象负责到老年代，如果老年代内存也紧张，会触发FullGC，对新生代和老年代进行垃圾回收。
+
+> 扩展：
+>
+> Major GC 清理OldGen（老年代），一般使用标记清理或者标记整理的算法进行回收。
+>
+> STW(Stop the word)：垃圾回收的时候，会暂停所有的工作线程
+
+
+
+| GC算法   | 优点           | 缺点               | 存活对象移动 | 内存碎片 | 适用场景 |
+| -------- | -------------- | ------------------ | ------------ | -------- | -------- |
+| 标记清除 | 不需要额外空间 | 两次扫描，耗时严重 | N            | Y        | 老年代   |
+| 复制     | 没有标记和清除 | 需要额外空间       | Y            | N        | 新生代   |
+| 标记整理 | 没有内存碎片   | 需要移动对象的成本 | Y            | N        | 老年代   |
+
+
+
+### 垃圾收集器
+
+[参考文章](https://www.cnblogs.com/cxxjohnson/p/8625713.html)
+
++ serial收集器
+
+  STW，单线程，新生代
+
++ ParNew收集器
+
+  多线程，缩短STW
+
++ Parallel Scavenge
+
+  新生
+
+
+
+> 扩展使用java自带的`jconsole.exe`可以图形化展现java JVM的内存占用，堆内存大小占用等情况。
+
+
 
