@@ -1,13 +1,12 @@
 ---
-title: MYSQL这点事
+title: 数据库汇总
 date: 2020-08-08 11:10:26
 tags:
-- MYSQL
-- Oracle
-  categories:
-- 数据库
-  cover: https://i.loli.net/2020/08/07/JxQGlO2gYjFZV1S.png
-
+  - MYSQL
+  - Oracle
+categories:
+  - 数据库
+cover: https://i.loli.net/2020/08/07/JxQGlO2gYjFZV1S.png
 ---
 
 ## 基础知识
